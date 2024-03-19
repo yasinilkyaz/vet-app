@@ -1,4 +1,3 @@
-import * as React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -37,7 +36,7 @@ function Customer() {
         city: customerWithId.city,
       });
     } catch (error) {
-      console.error(error.response.data.message);
+      showMessage(error.response.data.message);
       setByIdCustomer({
         name: "",
         phone: "",
@@ -46,6 +45,14 @@ function Customer() {
         city: "",
       });
     }
+  };
+  const [message, setMessage] = useState(null);
+
+  const showMessage = (msg) => {
+    setMessage(msg);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
   const [updateFormData, setUpdateFormData] = useState({
     name: "",
@@ -92,7 +99,7 @@ function Customer() {
         const data = await getCustomers();
         setCustomers(data);
       } catch (error) {
-        console.log(error);
+        showMessage(error);
       }
     };
 
@@ -103,9 +110,9 @@ function Customer() {
     try {
       await deleteCustomer(id);
       setCustomers(customers.filter((customer) => customer.id !== id));
-      console.log(`Customer with ID ${id} has been deleted.`);
+      showMessage(` ${id}'li müşteri silindi.`);
     } catch (error) {
-      console.log(`Error deleting customer with ID ${id}:`, error);
+      showMessage(`'li müşteri silinemedi:`, error);
     }
   };
 
@@ -130,7 +137,7 @@ function Customer() {
         city: "",
       });
     } catch (error) {
-      console.log(`Error updating customer with ID ${id}:`, error);
+      showMessage(`${id}'li müşteri güncellenemedi:`, error);
     }
   };
 
@@ -167,7 +174,7 @@ function Customer() {
         city: "",
       });
     } catch (error) {
-      console.error("Error adding new customer:", error);
+      showMessage("Müşteri eklenemedi:", error);
     }
   };
 
@@ -178,108 +185,113 @@ function Customer() {
 
   return (
     <>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Customer ID</TableCell>
-              <TableCell>Customer Name</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell>City</TableCell>
-              <TableCell>Delete</TableCell>
-              <TableCell>Update</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {customers.map((customer) => (
-              <TableRow key={customer.id}>
-                <TableCell>{customer.id}</TableCell>
-                <TableCell>{customer.name}</TableCell>
-                <TableCell>{customer.phone}</TableCell>
-                <TableCell>{customer.email}</TableCell>
-                <TableCell>{customer.address}</TableCell>
-                <TableCell>{customer.city}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => handleDelete(customer.id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    onClick={() => handleUpdateClick(customer)}
-                  >
-                    Update
-                  </Button>
-                </TableCell>
+      <section>
+        <br />
+        <h1>Müşteri Paneli</h1>
+        <br />
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Müşteri İsmi</TableCell>
+                <TableCell>Telefon</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Adres</TableCell>
+                <TableCell>Şehir</TableCell>
+                <TableCell>Sil</TableCell>
+                <TableCell>Güncelle</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <div className="container">
-        <div className="form-container">
-          <h2>New Customer</h2>
-          <form onSubmit={handleNewCustomerSubmit}>
-            <h6>Name</h6>
-            <input
-              type="text"
-              name="name"
-              onChange={handleNewCustomerChange}
-              value={newCustomerFormData.name}
-            />
-            <h6>Phone</h6>
-            <input
-              type="text"
-              name="phone"
-              onChange={handleNewCustomerChange}
-              value={newCustomerFormData.phone}
-            />
-            <h6>Email</h6>
-            <input
-              type="text"
-              name="email"
-              onChange={handleNewCustomerChange}
-              value={newCustomerFormData.email}
-            />
-            <h6>Address</h6>
-            <input
-              type="text"
-              name="address"
-              onChange={handleNewCustomerChange}
-              value={newCustomerFormData.address}
-            />
-            <h6>City</h6>
-            <input
-              type="text"
-              name="city"
-              onChange={handleNewCustomerChange}
-              value={newCustomerFormData.city}
-            />
-            <Button variant="contained" color="success" type="submit">
-              Add New Customer
-            </Button>
-          </form>
-        </div>
-        <div className="form-container">
+            </TableHead>
+            <TableBody>
+              {customers.map((customer) => (
+                <TableRow key={customer.id}>
+                  <TableCell>{customer.id}</TableCell>
+                  <TableCell>{customer.name}</TableCell>
+                  <TableCell>{customer.phone}</TableCell>
+                  <TableCell>{customer.email}</TableCell>
+                  <TableCell>{customer.address}</TableCell>
+                  <TableCell>{customer.city}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleDelete(customer.id)}
+                    >
+                      Sil
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleUpdateClick(customer)}
+                    >
+                      Güncelle
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {message && <message>{message}</message>}
+        <div className="container">
+          <div className="form-container">
+            <h2>Yeni Müşteri Kayıt</h2>
+            <form onSubmit={handleNewCustomerSubmit}>
+              <h6>İsim</h6>
+              <input
+                type="text"
+                name="name"
+                onChange={handleNewCustomerChange}
+                value={newCustomerFormData.name}
+              />
+              <h6>Telefon</h6>
+              <input
+                type="text"
+                name="phone"
+                onChange={handleNewCustomerChange}
+                value={newCustomerFormData.phone}
+              />
+              <h6>Email</h6>
+              <input
+                type="text"
+                name="email"
+                onChange={handleNewCustomerChange}
+                value={newCustomerFormData.email}
+              />
+              <h6>Adres</h6>
+              <input
+                type="text"
+                name="address"
+                onChange={handleNewCustomerChange}
+                value={newCustomerFormData.address}
+              />
+              <h6>Şehir</h6>
+              <input
+                type="text"
+                name="city"
+                onChange={handleNewCustomerChange}
+                value={newCustomerFormData.city}
+              />
+              <Button variant="contained" color="success" type="submit">
+                Kaydet
+              </Button>
+            </form>
+          </div>
+
           {selectedCustomer && (
             <div className="form-container">
-              <h2>Update Customer</h2>
+              <h2>Müşteri Güncelle</h2>
               <form onSubmit={handleSubmit}>
-                <h6>Name</h6>
+                <h6>İsim</h6>
                 <input
                   type="text"
                   name="name"
                   value={updateFormData.name}
                   onChange={handleUpdateChange}
                 />
-                <h6>Phone</h6>
+                <h6>Telefon</h6>
                 <input
                   type="text"
                   name="phone"
@@ -293,65 +305,83 @@ function Customer() {
                   value={updateFormData.email}
                   onChange={handleUpdateChange}
                 />
-                <h6>Address</h6>
+                <h6>Adres</h6>
                 <input
                   type="text"
                   name="address"
                   value={updateFormData.address}
                   onChange={handleUpdateChange}
                 />
-                <h6>City</h6>
+                <h6>Şehir</h6>
                 <input
                   type="text"
                   name="city"
                   value={updateFormData.city}
                   onChange={handleUpdateChange}
                 />
-                
-                  <Button variant="contained" type="submit">
-                    Update
-                  </Button>
-                  <br />
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => setSelectedCustomer(null)}
-                  >
-                    İptal
-                  </Button>
-                
+
+                <Button variant="contained" type="submit">
+                  Güncelle
+                </Button>
+                <br />
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => setSelectedCustomer(null)}
+                >
+                  İptal
+                </Button>
               </form>
             </div>
           )}
-        </div>
-        <div className="form-container">
-          <h2>Customer by ID</h2>
-          <form onSubmit={handleGetById}>
-            <div>
+
+          <div className="form-container">
+            <h2>ID ile Müşteri Ara</h2>
+            <form onSubmit={handleGetById}>
               <input type="number" name="id" onChange={handleGetByIdChange} />
               <Button variant="contained" type="submit">
-                ID Search
+                Arama
               </Button>
-            </div>
-          </form>
 
-          <h6>Name</h6>
-          <input type="text" name="name" value={ByIdCustomer.name} disabled />
-          <h6>Phone</h6>
-          <input type="text" name="phone" value={ByIdCustomer.phone} disabled />
-          <h6>Email</h6>
-          <input type="text" name="email" value={ByIdCustomer.email} disabled />
-          <h6>Address</h6>
-          <input
-            type="text"
-            name="address"
-            value={ByIdCustomer.address}
-            disabled
-          />
-          <h6>City</h6>
-          <input type="text" name="city" value={ByIdCustomer.city} disabled />
+              <h6>İsim</h6>
+              <input
+                type="text"
+                name="name"
+                value={ByIdCustomer.name}
+                disabled
+              />
+              <h6>Telefon</h6>
+              <input
+                type="text"
+                name="phone"
+                value={ByIdCustomer.phone}
+                disabled
+              />
+              <h6>Email</h6>
+              <input
+                type="text"
+                name="email"
+                value={ByIdCustomer.email}
+                disabled
+              />
+              <h6>Adres</h6>
+              <input
+                type="text"
+                name="address"
+                value={ByIdCustomer.address}
+                disabled
+              />
+              <h6>Şehir</h6>
+              <input
+                type="text"
+                name="city"
+                value={ByIdCustomer.city}
+                disabled
+              />
+            </form>
+          </div>
         </div>
-      </div>
+      </section>
     </>
   );
 }
